@@ -7,19 +7,15 @@
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
         <link rel="stylesheet" href="{{asset('assets/css/bootstrap.min.css')}}"/>
         <link rel="stylesheet" href="{{asset('assets/css/openlayers3/ol.css')}}"/>
-        <script
-  src="https://code.jquery.com/jquery-3.3.1.min.js"
-  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-  crossorigin="anonymous"></script>
+        
     </head>
     <body>
         {% block body %}{% endblock %}
-        
-  
-  <script src="{{ asset('assets/js/bootstrap.min.js')}}"/></script>
-  <script src="{{ asset('assets/js/typeahead.js') }}"></script>
-  <script src="{{ asset('assets/js/index.js') }}"/>
-  <script src="{{ asset('assets/js/openlayers3/ol.js') }}"/>
+            <script src="{{ asset('assets/js/jquery.js')}}"></script>
+            <script src="{{ asset('assets/js/openlayers3/ol.js') }}"/>
+            <script src="{{ asset('assets/js/bootstrap.min.js')}}"/></script>
+            <script src="{{ asset('assets/js/typeahead.js') }}"></script>
+            <script src="{{ asset('assets/js/index.js') }}"/>
         {% block javascripts %}{% endblock %}
     </body>
 </html>

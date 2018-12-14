@@ -3,64 +3,27 @@
 {% block body %}
     <div id="wrapper">
         <div id="container">
+            <div class="col-md-2">
             <div id="welcome">
                 <h1><span>Check Your Current Weather</span> for Australian Post Codes</h1>
             </div>
-
             <div id="next">
-                <div class="form-group col-md-6">
+                <div class="form-group col-md-12">
                     <label for="text-location">Location Name or Postcode <br />(e.g Sydney, Melbourne, 2000, 3000)</label>
                     <input type="text" class="form-control" id="text-location">
                 </div>
-                <div class="form-group col-md-6">
+                <div class="form-group col-md-12">
                     <label for="text-distance">Set Radius Distance <br />(in Kilometers e.g 15):</label>
                     <input type="text" class="form-control" id="text-distance" style="width: 70px;" value="15">
                 </div>
-
             </div>
             <br><br>
             <button id="btn-search" class="btn btn-primary">Search Now</button>
-            <div class="map">
-               <div id="mapdiv"></div>
+            </div>
+            <div class="col-md-10">
+               <div id="map" class="map"></div>
             </div>
         </div>
-
-        
-
-        <button type="button" id="btn-modal" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" style="display: none;">Open Modal</button>
-
-        <!-- Modal -->
-        <div id="myModal" class="modal fade" role="dialog">
-          <div class="modal-dialog">
-
-            <!-- Modal content-->
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Search Result :</h4>
-              </div>
-              <div class="modal-body">
-                <table id="table-search-result" class="table table-striped table-bordered" cellspacing="0" width="100%">
-                  <thead>
-                      <tr>
-                          <th>Post Code</th>
-                          <th>Place Name</th>
-                          <th>State Name</th>
-                          <th>State Code</th>
-                      </tr>
-                  </thead>
-                  <tbody id="search-result">
-                  </tbody>
-                </table>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
     </div>
 {% endblock %}
 
@@ -74,15 +37,13 @@
     a { color: #0000F0; }
     a:hover { text-decoration: none; }
     code { background: #F5F5F5; max-width: 100px; padding: 2px 6px; word-wrap: break-word; }
-    #wrapper { background: #FFF; margin: 1em auto; max-width: 800px; width: 95%; }
-    #container { padding: 2em; }
-    #welcome, #status { margin-bottom: 2em; }
+    #wrapper { background: #FFF;}
+    #welcome, #status { margin-bottom: 1em; }
     #welcome h1 span { display: block; font-size: 75%; }
     #icon-status, #icon-book { float: left; height: 64px; margin-right: 1em; margin-top: -4px; width: 64px; }
     #icon-book { display: none; }
 
     @media (min-width: 768px) {
-        #wrapper { width: 80%; margin: 2em auto; }
         #icon-book { display: inline-block; }
         #status a, #next a { display: block; }
 
@@ -90,16 +51,41 @@
         @keyframes fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
         .sf-toolbar { opacity: 0; -webkit-animation: fade-in 1s .2s forwards; animation: fade-in 1s .2s forwards;}
     }
-    .map{
-        height: 300px;
-        width : 300px;
-    }
 </style>
 {% endblock %}
 
 {% block javascripts %}
     <script src="{{asset('assets/js/index.js')}}" async="false"></script>
     <script>
+    //map feature
+    var map = new ol.Map({
+        target: 'map',
+        interactions: ol.interaction.defaults({mouseWheelZoom:false}),
+        layers: [
+          new ol.layer.Tile({
+            source: new ol.source.OSM()
+          })
+        ],
+        view: new ol.View({
+          center: ol.proj.fromLonLat([-74.0061,40.712]), 
+          zoom: 7 //Initial Zoom Level
+        })
+      });
+
+      var marker = new ol.Feature({
+          geometry: new ol.geom.Point(
+            ol.proj.fromLonLat([-74.006,40.7127])
+          ),  // Cordinates of New York's Town Hall
+        });
+        var vectorSource = new ol.source.Vector({
+          features: [marker]
+        });
+        var markerVectorLayer = new ol.layer.Vector({
+          source: vectorSource,
+        });
+        map.addLayer(markerVectorLayer);
+
+      //searchable
       document.getElementById("text-location").addEventListener("click", function(e){
           document.getElementById("text-postcode").value = "";
       });
