@@ -20,11 +20,14 @@ class ApiController extends Controller
 
         $jPath = file_get_contents(__DIR__.'\dummy\au_city.json');
         $data = json_decode($jPath, true);
+        foreach($data as $k){
+            $zip = $k['Postal Code'];
+            $name = $k['Place Name'];
+
+            $dat[] =  $zip . ' - ' . $name ;
+        }
         return new jsonResponse(
-            [
-                'msg'=>'data',
-                'data'=> $data
-            ],
+            $dat,
             Response::HTTP_OK
         );
     }
