@@ -1,56 +1,158 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div id="wrapper">
-        <div id="container">
-            <div>
-                text
-            </div>
-        </div>
-    </div>
-{% endblock %}
+    <div class="ui-widget">
+  <label for="city">Your city: </label>
+  <input id="city">
+  Powered by <a href="http://geonames.org">geonames.org</a>
+</div>
 
-{% block stylesheets %}
-<style>
-    body { background: #F5F5F5; font: 18px/1.5 sans-serif; }
-    h1, h2 { line-height: 1.2; margin: 0 0 .5em; }
-    h1 { font-size: 36px; }
-    h2 { font-size: 21px; margin-bottom: 1em; }
-    p { margin: 0 0 1em 0; }
-    a { color: #0000F0; }
-    a:hover { text-decoration: none; }
-    code { background: #F5F5F5; max-width: 100px; padding: 2px 6px; word-wrap: break-word; }
-    #wrapper { background: #FFF; margin: 1em auto; max-width: 800px; width: 95%; }
-    #container { padding: 2em; }
-    #welcome, #status { margin-bottom: 2em; }
-    #welcome h1 span { display: block; font-size: 75%; }
-    #icon-status, #icon-book { float: left; height: 64px; margin-right: 1em; margin-top: -4px; width: 64px; }
-    #icon-book { display: none; }
+<div class="ui-widget" style="margin-top:2em; font-family:Arial">
+  Result:
+  <div id="log" style="height: 200px; width: 300px; overflow: auto;" class="ui-widget-content"></div>
+</div>
+    {% endblock %}
 
-    @media (min-width: 768px) {
-        #wrapper { width: 80%; margin: 2em auto; }
-        #icon-book { display: inline-block; }
-        #status a, #next a { display: block; }
+    {% block stylesheets %}
+        <style>
+            body {
+                background: #F5F5F5;
+                font: 18px/1.5 sans-serif;
+            }
+            h1,
+            h2 {
+                line-height: 1.2;
+                margin: 0 0 0.5em;
+            }
+            h1 {
+                font-size: 36px;
+            }
+            h2 {
+                font-size: 21px;
+                margin-bottom: 1em;
+            }
+            p {
+                margin: 0 0 1em;
+            }
+            a {
+                color: #0000F0;
+            }
+            a:hover {
+                text-decoration: none;
+            }
+            code {
+                background: #F5F5F5;
+                max-width: 100px;
+                padding: 2px 6px;
+                word-wrap: break-word;
+            }
+            #wrapper {
+                background: #FFF;
+                margin: 1em auto;
+                max-width: 800px;
+                width: 95%;
+            }
+            #container {
+                padding: 2em;
+            }
+            #status,
+            #welcome {
+                margin-bottom: 2em;
+            }
+            #welcome h1 span {
+                display: block;
+                font-size: 75%;
+            }
+            #icon-book,
+            #icon-status {
+                float: left;
+                height: 64px;
+                margin-right: 1em;
+                margin-top: -4px;
+                width: 64px;
+            }
+            #icon-book {
+                display: none;
+            }
 
-        @-webkit-keyframes fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
-        @keyframes fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
-        .sf-toolbar { opacity: 0; -webkit-animation: fade-in 1s .2s forwards; animation: fade-in 1s .2s forwards;}
-    }
-</style>
-{% endblock %}
+            @media (min-width: 768px) {
+                #wrapper {
+                    width: 80%;
+                    margin: 2em auto;
+                }
+                #icon-book {
+                    display: inline-block;
+                }
+                #next a,
+                #status a {
+                    display: block;
+                }
 
-{% block javascripts %}
-    <script>
-        $(document).ready(function(){
-            $.ajax({
-                    url: "http://localhost:8000/api/location"
-                }).then(function(data) {
-                    var obj = data.data;
-                    var myData = JSON.stringify(obj)
-                    $.each(obj, function(key, value){
-                        console.log(key, value['Postal Code']);
-                    });
+                @-webkit-keyframes fade-in {
+                    0% {
+                        opacity: 0;
+                    }
+                    100% {
+                        opacity: 1;
+                    }
+                }
+                @keyframes fade-in {
+                    0% {
+                        opacity: 0;
+                    }
+                    100% {
+                        opacity: 1;
+                    }
+                }
+                .sf-toolbar {
+                    opacity: 0;
+                    -webkit-animation: fade-in 1s 0.2s forwards;
+                    animation: fade-in 1s 0.2s forwards;
+                }
+            }
+        </style>
+    {% endblock %}
+
+    {% block javascripts %}
+        <script>
+            $(function () {
+                function log(message) {
+                    $("<div>")
+                        .text(message)
+                        .prependTo("#log");
+                    $("#log").scrollTop(0);
+                }
+
+                $("#city").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: "http://localhost:8000/api/location",
+                            dataType: "jsonp",
+                            success: function (data) {
+                                response(data);
+                                console.log(data);
+                            }
+                        });
+                    },
+                    minLength: 3,
+                    select: function (event, ui) {
+                        log(
+                            ui.item
+                                ? "Selected: " + ui.item.label
+                                : "Nothing selected, input was " + this.value
+                        );
+                    },
+                    open: function () {
+                        $(this)
+                            .removeClass("ui-corner-all")
+                            .addClass("ui-corner-top");
+                    },
+                    close: function () {
+                        $(this)
+                            .removeClass("ui-corner-top")
+                            .addClass("ui-corner-all");
+                    }
                 });
-        });
-    </script>
-{% endblock %}
+            });
+        </script>
+    {% endblock %}
