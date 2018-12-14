@@ -17,7 +17,6 @@ class ApiController extends Controller
      */
     public function locationList(Request $request)
     {   
-
         $jPath = file_get_contents(__DIR__.'\dummy\au_city.json');
         $data = json_decode($jPath, true);
         foreach($data as $k){
@@ -30,5 +29,16 @@ class ApiController extends Controller
             $dat,
             Response::HTTP_OK
         );
+    }
+
+    /**
+     * @Route("/api/weather", name="weather")
+     * @Method("POST")
+     */
+    public function weatherMap(Request $request)
+    {
+        $data = $request->query->get('name');
+        return new Response($data);
+        exit;
     }
 }
