@@ -42,26 +42,15 @@
 {% block javascripts %}
     <script>
         $(document).ready(function(){
-            console.log("Script working properly");
-        });
-
-        $.ajax({
-          dataType: "json",
-          url: 'http:localhost:8000/api/',
-          data: {name: name},
-          success: success
-        });
-
-        $.getJSON( "location", function( data ) {
-          var items = [];
-          $.each( data, function( key, val ) {
-            items.push( "<li id='" + key + "'>" + val + "</li>" );
-          });
-
-          $( "<ul/>", {
-            "class": "my-new-list",
-            html: items.join( "" )
-          }).appendTo( "body" );
+            $.ajax({
+                    url: "http://localhost:8000/api/location"
+                }).then(function(data) {
+                    var obj = data.data;
+                    var myData = JSON.stringify(obj)
+                    $.each(obj, function(key, value){
+                        console.log(key, value['Postal Code']);
+                    });
+                });
         });
     </script>
 {% endblock %}
