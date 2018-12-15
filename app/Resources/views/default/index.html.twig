@@ -154,12 +154,12 @@
 
     function openNav() {
       document.getElementById("mySidenav").style.width = "250px";
-      document.getElementById("main").style.marginLeft = "250px";
+      document.getElementById("wrapper").style.marginLeft = "250px";
     }
 
     function closeNav() {
       document.getElementById("mySidenav").style.width = "0";
-      document.getElementById("main").style.marginLeft= "0";
+      document.getElementById("wrapper").style.marginLeft= "0";
     }
 
 
@@ -222,6 +222,18 @@
     document.getElementById("btn-search").addEventListener("click", function(e){
           	e.preventDefault();
             var name = document.getElementById("text-location").value;
+            if( $("#temperature").children().length > 0 ){
+                $("#temperature").children().remove();
+            }
+            if( $("#humidity").children().length > 0 ){
+                $("#humidity").children().remove();
+            }
+            if( $("#pressure").children().length > 0 ){
+                $("#pressure").children().remove();
+            }
+            if( $("#stat").children().length > 0 ){
+                $("#stat").children().remove();
+            }
             $.post(
                 'api/weather',
                 {
@@ -230,10 +242,13 @@
                 function(data, status){
                     temp = Number(data.main.temp);
                     temperature = temp - 272.15;
-                    $("#stat").append('status');
-                    $("#temperature").append(temperature);
-                    $("#humidity").append(data.main.humidity);
-                    $("#pressure").append(data.main.pressure);
+                    weather = data.weather;
+                    for (var i = 0, len = weather.length; i < len; i++) {
+                        $("#stat").append('<span>' + weather[i].description + '</span>');
+                    }
+                    $("#temperature").append('<span>' + temperature + '</span>');
+                    $("#humidity").append('<span>' + data.main.humidity + '</span>');
+                    $("#pressure").append('<span>' + data.main.pressure + '</span>');
                     Lat = data.coord['lat'];
                     Lon = data.coord['lon'];
                     Loc = fromLonLat([Lon,Lat]);
