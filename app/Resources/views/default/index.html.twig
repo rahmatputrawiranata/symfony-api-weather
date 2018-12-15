@@ -2,11 +2,13 @@
 
 {% block body %}
     <div id="mySidenav" class="sidenav">
-      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-      <a href="#">About</a>
-      <a href="#">Services</a>
-      <a href="#">Clients</a>
-      <a href="#">Contact</a>
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+      <div id="status">
+        <p> status : <span id="stat"></span></p>
+        <p> temperature : <span id="temperature"></span> Celcius</p>
+        <p> humidity: <span id="humidity"></span> PH </p>
+        <p> Pressure: <span id="pressure"></span></p>
+      </div>
     </div>
     <div id="wrapper">
         <div id="container">
@@ -226,11 +228,18 @@
                     where: name
                 },
                 function(data, status){
+                    temp = Number(data.main.temp);
+                    temperature = temp - 272.15;
+                    $("#stat").append('status');
+                    $("#temperature").append(temperature);
+                    $("#humidity").append(data.main.humidity);
+                    $("#pressure").append(data.main.pressure);
                     Lat = data.coord['lat'];
                     Lon = data.coord['lon'];
                     Loc = fromLonLat([Lon,Lat]);
                     flyTo(Loc, function() {});
                     openNav();
+                    
                 });
             });
     
