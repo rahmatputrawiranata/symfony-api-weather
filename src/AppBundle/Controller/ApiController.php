@@ -37,8 +37,18 @@ class ApiController extends Controller
      */
     public function weatherMap(Request $request)
     {
-        $data = $request->query->get('name');
-        return new Response($data);
-        exit;
+        $city = $request->request->get('where');
+        $city = explode(" - ", $city);
+        $cityF = $city[1];
+        $jPath = file_get_contents(__DIR__.'\dummy\au_city.json');
+        $json = json_decode($jPath, true);
+        foreach($json as $k){
+            if($k['Place Name'] == $cityF){
+                return new jsonResponse(
+                    $k,
+                    Response::HTTP_OK
+                );
+            }
+        }
     }
 }

@@ -100,46 +100,75 @@
 {% block javascripts %}
     <script src="{{asset('assets/js/index.js')}}" async="false"></script>
     <script>
-    //map feature
-    var map = new ol.Map({
+
+    var Map = ol.Map;
+    var View = ol.View;
+    var TileLayer = ol.layer.Tile;
+    var OSM = ol.source.OSM;
+    var fromLonLat = ol.proj.fromLonLat;
+
+    var australi = fromLonLat([134.489563,-25.734968]);
+    var view = new View({
+        center : australi,
+        zoom : 4
+    });
+
+    var map = new Map({
         target: 'map',
-        interactions: ol.interaction.defaults({mouseWheelZoom:false}),
+        interaction: ol.interaction.defaults({mouseWheelZoom:false}),
         layers: [
-          new ol.layer.Tile({
-            source: new ol.source.OSM()
-          })
+            new TileLayer({
+                preload: 4, 
+                source: new OSM()
+            })
         ],
-        view: new ol.View({
-          center: ol.proj.fromLonLat([134.489563,-25.734968]), 
-          zoom: 4 //Initial Zoom Level
-        })
-      });
+        loadTilesWhileAnimating: true,
+        view: view
+    });
 
-      var marker = new ol.Feature({
-          geometry: new ol.geom.Point(
-            ol.proj.fromLonLat([134.489563,-25.734968])
-          ),  // Cordinates of New York's Town Hall
-        });
-        var vectorSource = new ol.source.Vector({
-          features: [marker]
-        });
-        var markerVectorLayer = new ol.layer.Vector({
-          source: vectorSource,
-        });
-        map.addLayer(markerVectorLayer);
+    function flyTo(location, done) {
+        var duration = 2000;
+        var zoom = view.getZoom();
+        var parts = 2;
+        var called = false;
+        function callback(complete) {
+          --parts;
+          if (called) {
+            return;
+          }
+          if (parts === 0 || !complete) {
+            called = true;
+            done(complete);
+          }
+        }
+        view.animate({
+          center: location,
+          duration: duration
+        }, callback);
+        view.animate({
+          zoom: zoom - 1,
+          duration: duration / 2
+        }, {
+          zoom: 10,
+          duration: duration / 2
+        }, callback);
+      }
 
-      //searchable
-
+    
     document.getElementById("btn-search").addEventListener("click", function(e){
           	e.preventDefault();
             var name = document.getElementById("text-location").value;
-            ajax_post('/api/weathermap', name,
-                     function(data){
-                    $('#text-location').typeahead({
-                        source: JSON.parse(data)
-                    });
+            $.post(
+                'api/weather',
+                {
+                    where: name
+                },
+                function(data, status){
+                    Lat = data.Latitude;
+                    Lon = data.Longitude;
+                    Loc = fromLonLat([Lon,Lat]);
+                    flyTo(Loc, function() {});
                 });
-
             });
     
     var result;
