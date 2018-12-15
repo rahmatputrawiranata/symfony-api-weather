@@ -1,8 +1,16 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+    <div id="mySidenav" class="sidenav">
+      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+      <a href="#">About</a>
+      <a href="#">Services</a>
+      <a href="#">Clients</a>
+      <a href="#">Contact</a>
+    </div>
     <div id="wrapper">
         <div id="container">
+            
             <div class="col-md-2">
             <div id="welcome">
                 <h1><span>Check Your Current Weather</span> for Australian Post Codes</h1>
@@ -94,12 +102,66 @@
 .tt-suggestion p {
     margin: 0;
 }
+
+
+/* The side navigation menu */
+.sidenav {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+}
+
+.sidenav a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.sidenav .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+#wrapper {
+  transition: margin-left .5s;
+  padding: 16px;
+}
 </style>
 {% endblock %}
 
 {% block javascripts %}
     <script src="{{asset('assets/js/index.js')}}" async="false"></script>
     <script>
+    //sidenav
+
+    function openNav() {
+      document.getElementById("mySidenav").style.width = "250px";
+      document.getElementById("main").style.marginLeft = "250px";
+    }
+
+    function closeNav() {
+      document.getElementById("mySidenav").style.width = "0";
+      document.getElementById("main").style.marginLeft= "0";
+    }
+
+
+    //map
 
     var Map = ol.Map;
     var View = ol.View;
@@ -164,10 +226,11 @@
                     where: name
                 },
                 function(data, status){
-                    Lat = data.Latitude;
-                    Lon = data.Longitude;
+                    Lat = data.coord['lat'];
+                    Lon = data.coord['lon'];
                     Loc = fromLonLat([Lon,Lat]);
                     flyTo(Loc, function() {});
+                    openNav();
                 });
             });
     
